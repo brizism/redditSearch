@@ -69,7 +69,26 @@ require = (function (modules, cache, entry) {
 
   // Override the current require with this new one
   return newRequire;
-})({4:[function(require,module,exports) {
+})({14:[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = {
+  search: function (searchTerm, searchLimit, sortBy) {
+    return fetch(`http://www.reddit.com/search.json?q=${searchTerm}&sort=${sortBy}&limit=${searchLimit}`).then(res => res.json()).then(data => data.data.children.map(data => data.data)).catch(err => console.log(err));
+  }
+};
+},{}],4:[function(require,module,exports) {
+'use strict';
+
+var _redditapi = require('./redditapi');
+
+var _redditapi2 = _interopRequireDefault(_redditapi);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
 const searchForm = document.getElementById('search-form');
 const searchInput = document.getElementById('search-input');
 
@@ -81,24 +100,48 @@ searchForm.addEventListener('submit', e => {
   const sortBy = document.querySelector('input[name="sortby"]:checked').value;
   // Get limit
   const searchLimit = document.getElementById('limit').value;
-  
+
   // Check input
-  if(searchTerm === '') {
+  if (searchTerm === '') {
     // Show message
     showMessage('Please add a search term', 'alert-danger');
-  } 
-  
+  }
+
   // Clear input 
   searchInput.value = '';
 
-  
+  // Search Reddit
+  _redditapi2.default.search(searchTerm, searchLimit, sortBy).then(results => {
+    console.log(results);
+    let output = '<div class="card-columns">';
+    // Loop through posts
+    results.forEach(post => {
+      // Check for image 
+      const image = post.preview ? post.preview.images[0].source.url : 'https://cdn.comparitech.com/wp-content/uploads/2017/08/reddit-1.jpg';
+
+      output += `
+        <div class="card">
+        <img class="card-img-top" src="${image}" alt="Card image cap">
+        <div class="card-body">
+          <h5 class="card-title">${post.title}</h5>
+          <p class="card-text">${truncateText(post.selftext, 100)}</p>
+          <a href="${post.url}" target="_blank" class="btn btn-primary">Read More</a>
+          <hr>
+          <span class="badge badge-secondary">Subreddit: ${post.subreddit}</span>
+          <span class="badge badge-dark">Score: ${post.score}</span>
+        </div>
+      </div>
+        `;
+    });
+    output += '</div>';
+    document.getElementById('results').innerHTML = output;
+  });
 
   e.preventDefault();
-
 });
 
 // Show Message
-showMessage = (message, className) => {
+function showMessage(message, className) {
   // Create div
   const div = document.createElement('div');
   // Add classes
@@ -116,7 +159,14 @@ showMessage = (message, className) => {
   // Timeout alert
   setTimeout(() => document.querySelector('.alert').remove(), 3000);
 }
-},{}],12:[function(require,module,exports) {
+
+// Truncate Text 
+function truncateText(text, limit) {
+  const shortened = text.indexOf(' ', limit);
+  if (shortened == -1) return text;
+  return text.substring(0, shortened);
+}
+},{"./redditapi":14}],15:[function(require,module,exports) {
 
 var global = (1, eval)('this');
 var OldModule = module.bundle.Module;
@@ -237,5 +287,5 @@ function hmrAccept(bundle, id) {
     return hmrAccept(global.require, id);
   });
 }
-},{}]},{},[12,4])
+},{}]},{},[15,4])
 //# sourceMappingURL=/dist/redditsearch.map

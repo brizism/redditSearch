@@ -16,7 +16,10 @@ searchForm.addEventListener('submit', e => {
     showMessage('Please add a search term', 'alert-danger');
   } 
   
+  // Clear input 
+  searchInput.value = '';
 
+  
 
   e.preventDefault();
 

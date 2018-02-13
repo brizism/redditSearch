@@ -70,8 +70,50 @@ require = (function (modules, cache, entry) {
   // Override the current require with this new one
   return newRequire;
 })({4:[function(require,module,exports) {
+const searchForm = document.getElementById('search-form');
+const searchInput = document.getElementById('search-input');
 
-},{}],6:[function(require,module,exports) {
+// Form Event Listener
+searchForm.addEventListener('submit', e => {
+  // Get search term
+  const searchTerm = searchInput.value;
+  // Get sort
+  const sortBy = document.querySelector('input[name="sortby"]:checked').value;
+  // Get limit
+  const searchLimit = document.getElementById('limit').value;
+  
+  // Check input
+  if(searchTerm === '') {
+    // Show message
+    showMessage('Please add a search term', 'alert-danger');
+  } 
+  
+
+
+  e.preventDefault();
+
+});
+
+// Show Message
+showMessage = (message, className) => {
+  // Create div
+  const div = document.createElement('div');
+  // Add classes
+  div.className = `alert ${className}`;
+  // Add text
+  div.appendChild(document.createTextNode(message));
+  // Get parent
+  const searchContainer = document.getElementById('search-container');
+  // Get search
+  const search = document.getElementById('search');
+
+  // Insert message
+  searchContainer.insertBefore(div, search);
+
+  // Timeout alert
+  setTimeout(() => document.querySelector('.alert').remove(), 3000);
+}
+},{}],12:[function(require,module,exports) {
 
 var global = (1, eval)('this');
 var OldModule = module.bundle.Module;
@@ -192,5 +234,5 @@ function hmrAccept(bundle, id) {
     return hmrAccept(global.require, id);
   });
 }
-},{}]},{},[6,4])
+},{}]},{},[12,4])
 //# sourceMappingURL=/dist/redditsearch.map
